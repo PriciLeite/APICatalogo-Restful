@@ -1,4 +1,6 @@
-﻿namespace APICatalogo.Model;
+﻿using APICatalogo.Models;
+
+namespace APICatalogo.Model;
 
 public class Produto
 {
@@ -8,7 +10,8 @@ public class Produto
     public decimal Preco { get; set; }
     public string? ImagemUrl { get; set; }
     public float Estoque { get; set; }
-    public DateTime DataCadastro { get; set; }
-    
+    public DateTime DataCadastro { get; set; }    
+    public int CategoriaId { get; set; }
+    public Categoria? Categoria { get; set; }
 
 }
