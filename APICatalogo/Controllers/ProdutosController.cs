@@ -2,6 +2,7 @@
 using APICatalogo.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace APICatalogo.Controllers
 {
@@ -58,6 +59,17 @@ namespace APICatalogo.Controllers
         [HttpPost]
         public ActionResult Post(Produto produto)
         {
+            // Verifica se existem informações no corpo da requisição
+            if (HttpContext.Request.Body.CanRead)
+            {
+                return BadRequest("body ocupado.");                
+            }
+
+            if (produto is null)
+            {
+                return BadRequest();
+            }
+
             _context.Produtos.Add(produto);
             _context.SaveChanges();
 
