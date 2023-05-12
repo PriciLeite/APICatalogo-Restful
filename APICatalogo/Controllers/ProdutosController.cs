@@ -31,15 +31,15 @@ namespace APICatalogo.Controllers
             return Ok(produtos);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> GetProduto(int id)
         {
             var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
-            if(produto == null)
+            if (produto == null)
             {
                 return NotFound("Produto não encontrado.");
             }
-            
+
             return Ok(produto);
         }
 
@@ -53,6 +53,16 @@ namespace APICatalogo.Controllers
             }
 
             return Ok(produto);
+        }
+
+        [HttpPost]
+        public ActionResult Post(Produto produto)
+        {
+            _context.Produtos.Add(produto);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterProduto",
+                new {id = produto.ProdutoId}, produto);
         }
 
 
