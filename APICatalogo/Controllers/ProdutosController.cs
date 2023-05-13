@@ -3,6 +3,7 @@ using APICatalogo.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
 {
@@ -62,7 +63,7 @@ namespace APICatalogo.Controllers
             // Verifica se existem informações no corpo da requisição
             if (HttpContext.Request.Body.CanRead)
             {
-                return BadRequest("body ocupado.");                
+                return BadRequest();
             }
 
             if (produto is null)
@@ -74,9 +75,26 @@ namespace APICatalogo.Controllers
             _context.SaveChanges();
 
             return new CreatedAtRouteResult("ObterProduto",
-                new {id = produto.ProdutoId}, produto);
+                new { id = produto.ProdutoId }, produto);
         }
 
+
+        [HttpPut("{id:int}")]
+        public ActionResult Put(int id, Produto produto)
+        {
+            if (id != produto.ProdutoId)
+            {
+                return BadRequest("Id não compatível.");  //400
+            }
+
+            //Entry acessa as informações rastreadas pelo _context.
+            //O objeto retornado por Entry( ) é do tipo EntiteState que fornece
+            //informações sobre o estado atual da entidade e permite que você altere o estado da entidade.  
+            _context.Produtos.Entry(produto).State = EntityState.Modified;
+            _context.SaveChanges();      
+            
+            return Ok(produto);
+        }        
 
     }
 }
