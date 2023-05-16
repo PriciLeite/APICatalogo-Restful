@@ -21,14 +21,14 @@ namespace APICatalogo.Controllers
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
-            return _context.Categorias.Include(c => c.Produtos).ToList();
+            return _context.Categorias.Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToList();
         }
 
 
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> GetActionResult()
         {
-            var categoria = _context.Categorias.ToList();
+            var categoria = _context.Categorias.Take(10).ToList();
             if (categoria == null)
             {
                 return NotFound("Categoria não encontrada.");

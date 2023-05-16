@@ -23,7 +23,7 @@ namespace APICatalogo.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> GetActionResult()
         {
-            var produtos = _context.Produtos;
+            var produtos = _context.Produtos.Take(10).ToList();
 
             if (produtos is null)
             {
