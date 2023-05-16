@@ -44,18 +44,7 @@ namespace APICatalogo.Controllers
 
             return Ok(produto);
         }
-
-        [HttpGet("{nome}")]
-        public ActionResult<Produto> GetProduto(string nome)
-        {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Nome == nome);
-            if (produto == null)
-            {
-                return NotFound("Produto não encontrado.");
-            }
-
-            return Ok(produto);
-        }
+               
 
         [HttpPost]
         public ActionResult Post(Produto produto)
@@ -84,7 +73,7 @@ namespace APICatalogo.Controllers
         {
             if (id != produto.ProdutoId)
             {
-                return BadRequest("Id não compatível.");  //400
+                return BadRequest("Id não compatível com IdProduto");  //400
             }
 
             //Entry acessa as informações rastreadas pelo _context.
@@ -112,8 +101,8 @@ namespace APICatalogo.Controllers
             return Ok(produto);
         
         }
-    
-    
+
+        
     
     
     }
