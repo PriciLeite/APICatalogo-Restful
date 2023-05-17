@@ -1,9 +1,8 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace APICatalogo.Controllers
 {
@@ -20,90 +19,144 @@ namespace APICatalogo.Controllers
             _context = context;
         }
 
+
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> GetActionResult()
         {
-            var produtos = _context.Produtos.Take(10).ToList();
-
-            if (produtos is null)
+            try
             {
-                return NotFound("Produtos não encontrado ou lista vazia.");
+                var produtos = _context.Produtos.Take(10).ToList();
+
+                if (produtos is null)
+                {
+                    return NotFound("Produtos não encontrado ou lista vazia.");
+                }
+
+                return Ok(produtos);
             }
 
-            return Ok(produtos);
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Ocorreu um erro na obtenção dos dados...");
+            }
+            
         }
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> GetProduto(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
-            if (produto == null)
+            try
             {
-                return NotFound("Produto não encontrado.");
+                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+                if (produto == null)
+                {
+                    return NotFound("Produto não encontrado.");
+                }
+
+                return Ok(produto);
             }
 
-            return Ok(produto);
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Ocorreu um erro, id={id} não encontrado ou não existe.");
+            }
+            
         }
                
 
         [HttpPost]
         public ActionResult Post(Produto produto)
         {
-            // Verifica se existem informações no corpo da requisição
-            if (HttpContext.Request.Body.CanRead)
+            try
             {
-                return BadRequest();
+                // Verifica se existem informações no corpo da requisição
+                if (HttpContext.Request.Body.CanRead)
+                {
+                    return BadRequest();
+                }
+
+                if (produto is null)
+                {
+                    return BadRequest();
+                }
+
+                _context.Produtos.Add(produto);
+                _context.SaveChanges();
+
+                return new CreatedAtRouteResult("ObterProduto",
+                    new { id = produto.ProdutoId }, produto);
             }
 
-            if (produto is null)
+            catch (Exception)
             {
-                return BadRequest();
+
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Ocorreu um erro na obtenção dos dados...");
             }
-
-            _context.Produtos.Add(produto);
-            _context.SaveChanges();
-
-            return new CreatedAtRouteResult("ObterProduto",
-                new { id = produto.ProdutoId }, produto);
+            
         }
 
 
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Produto produto)
         {
-            if (id != produto.ProdutoId)
+            try
             {
-                return BadRequest("Id não compatível com IdProduto");  //400
+                if (id != produto.ProdutoId)
+                {
+                    return BadRequest("Id não compatível com IdProduto");  //400
+                }
+
+                //Entry acessa as informações rastreadas pelo _context.
+                //O objeto retornado por Entry( ) é do tipo EntiteState que fornece
+                //informações sobre o estado atual da entidade e permite que você altere o estado da entidade.  
+                _context.Produtos.Entry(produto).State = EntityState.Modified;
+                _context.SaveChanges();
+
+                return Ok(produto);
+            }
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Ocorreu um erro, id={id} não encontrado ou não existe.");
             }
 
-            //Entry acessa as informações rastreadas pelo _context.
-            //O objeto retornado por Entry( ) é do tipo EntiteState que fornece
-            //informações sobre o estado atual da entidade e permite que você altere o estado da entidade.  
-            _context.Produtos.Entry(produto).State = EntityState.Modified;
-            _context.SaveChanges();      
             
-            return Ok(produto);
         }
+
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
-
-            if ( produto is null)
+            try
             {
-                return NotFound("Produto não encontrado.");
+                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+
+                if (produto is null)
+                {
+                    return NotFound("Produto não encontrado.");
+                }
+
+                _context.Produtos.Remove(produto);
+                _context.SaveChanges();
+
+                return Ok(produto);
             }
-        
-            _context.Produtos.Remove(produto);
-            _context.SaveChanges();
 
-            return Ok(produto);
-        
-        }
+            catch (Exception)
+            {
 
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Ocorreu um erro, id={id} não encontrado ou não existe.");
+            }
+           
         
-    
-    
+        }    
+        
     }
+
 }
