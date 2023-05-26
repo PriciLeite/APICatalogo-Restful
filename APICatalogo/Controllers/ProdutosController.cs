@@ -21,7 +21,7 @@ namespace APICatalogo.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> GetActionResult()
+        public ActionResult<IEnumerable<Produto>> Get()
         {
             try
             {
@@ -72,11 +72,11 @@ namespace APICatalogo.Controllers
         {
             try
             {
-                // Verifica se existem informações no corpo da requisição
-                if (HttpContext.Request.Body.CanRead)
-                {
-                    return BadRequest();
-                }
+                //// Verifica se existem informações no corpo da requisição
+                //if (HttpContext.Request.Body.CanRead)
+                //{
+                //    return BadRequest();
+                //}
 
                 if (produto is null)
                 {

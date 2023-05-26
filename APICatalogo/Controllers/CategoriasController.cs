@@ -22,7 +22,7 @@ namespace APICatalogo.Controllers
         {
             try
             {
-                return _context.Categorias.Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToList();
+                return _context.Categorias.Include(c => c.Produtos)/*.Where(c => c.CategoriaId <= 5)*/.ToList();
             }
 
             catch (Exception)
@@ -35,7 +35,7 @@ namespace APICatalogo.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> GetActionResult()
+        public ActionResult<IEnumerable<Categoria>> Get()
         {
             try
             {
@@ -45,7 +45,7 @@ namespace APICatalogo.Controllers
                     return NotFound("Categoria não encontrada.");
                 }
 
-                return Ok(categoria);
+                return categoria;
             }
 
             catch (Exception)
@@ -57,7 +57,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public ActionResult<Produto> GetResult(int id)
+        public ActionResult<Categoria> Get(int id)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace APICatalogo.Controllers
                     return NotFound($"Categoria id={id} não encontrada ou não existe.");
                 }
 
-                return Ok(categoria);
+                return categoria;
             }
 
             catch (Exception)
