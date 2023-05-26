@@ -21,7 +21,7 @@ namespace APICatalogo.Controllers
 
         // /produtos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> GetAsync()
         {
             try
             {                                   // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
@@ -46,7 +46,7 @@ namespace APICatalogo.Controllers
 
         // /produtos/id
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public async Task<ActionResult<Produto>> GetProduto(int id)
+        public async Task<ActionResult<Produto>> GetProdutoAsync(int id)
         {
             try
             {                                   // Não monitorado pelo EF

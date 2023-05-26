@@ -19,7 +19,7 @@ namespace APICatalogo.Controllers
 
         // /Categorias/produtos
         [HttpGet("produtos")]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutosAsync()
         {
             try
             {                           //Marcando não monitoramento em cache    //aplicando filtro para obter objetos relacionados. 
@@ -36,7 +36,7 @@ namespace APICatalogo.Controllers
 
         // /categorias
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetAsync()
         {
             try
             {                                // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
