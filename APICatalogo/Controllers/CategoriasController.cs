@@ -19,11 +19,11 @@ namespace APICatalogo.Controllers
 
         // /Categorias/produtos
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
             try
             {                           //Marcando não monitoramento em cache    //aplicando filtro para obter objetos relacionados. 
-                return _context.Categorias.AsNoTracking().Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToList();
+                return await _context.Categorias.AsNoTracking().Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToListAsync();
             }
 
             catch (Exception)
@@ -36,11 +36,11 @@ namespace APICatalogo.Controllers
 
         // /categorias
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
             try
             {                                // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
-                var categoria = _context.Categorias.AsNoTracking().Take(10).ToList();
+                var categoria = await _context.Categorias.AsNoTracking().Take(10).ToListAsync();
                 if (categoria == null)
                 {
                     return NotFound("Categoria não encontrada.");
