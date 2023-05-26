@@ -19,20 +19,20 @@ namespace APICatalogo.Controllers
             _context = context;
         }
 
-
+        // /produtos
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
             try
-            {
-                var produtos = _context.Produtos.Take(10).ToList();
+            {                                   // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
+                var produtos = _context.Produtos.AsNoTracking().Take(10).ToList();
 
                 if (produtos is null)
                 {
                     return NotFound("Produtos não encontrado ou lista vazia.");
                 }
 
-                return Ok(produtos);
+                return produtos;
             }
 
             catch (Exception)
@@ -44,18 +44,19 @@ namespace APICatalogo.Controllers
             
         }
 
+        // /produtos/id
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> GetProduto(int id)
         {
             try
-            {
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            {                                   // Não monitoramento
+                var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
                 if (produto == null)
                 {
                     return NotFound("Produto não encontrado.");
                 }
 
-                return Ok(produto);
+                return produto;
             }
 
             catch (Exception)

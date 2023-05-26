@@ -17,12 +17,13 @@ namespace APICatalogo.Controllers
             _context = context;
         }
 
+        // /Categorias/produtos
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
             try
-            {
-                return _context.Categorias.Include(c => c.Produtos)/*.Where(c => c.CategoriaId <= 5)*/.ToList();
+            {                           //Marcando não monitoramento em cache    //aplicando filtro para obter objetos relacionados. 
+                return _context.Categorias.AsNoTracking().Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToList();
             }
 
             catch (Exception)
@@ -33,13 +34,13 @@ namespace APICatalogo.Controllers
             }
         }
 
-
+        // /categorias
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
             try
-            {
-                var categoria = _context.Categorias.Take(10).ToList();
+            {                                // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
+                var categoria = _context.Categorias.AsNoTracking().Take(10).ToList();
                 if (categoria == null)
                 {
                     return NotFound("Categoria não encontrada.");
@@ -56,12 +57,13 @@ namespace APICatalogo.Controllers
 
         }
 
+        // /categorias/id
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
             try
-            {
-                var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+            {                                     //Marcando não monitoramento em cache 
+                var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound($"Categoria id={id} não encontrada ou não existe.");
