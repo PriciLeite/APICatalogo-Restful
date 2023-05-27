@@ -1,6 +1,7 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -46,11 +47,13 @@ namespace APICatalogo.Controllers
 
         // /produtos/id
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public async Task<ActionResult<Produto>> GetProdutoAsync(int id)
+        public async Task<ActionResult<Produto>> GetProdutoAsync(int id, [BindRequired] string nome)
         {
             try
-            {                                   // Não monitorado pelo EF
-                var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
+            {
+                var nomeProduto = nome; 
+                                                    // Não monitorado pelo EF
+                var produto = await _context.Produtos.AsNoTracking().Where(c => c.Nome == nomeProduto).FirstOrDefaultAsync(p => p.ProdutoId == id);
                 if (produto == null)
                 {
                     return NotFound("Produto não encontrado.");
@@ -62,7 +65,7 @@ namespace APICatalogo.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Ocorreu um erro, id={id} não encontrado ou não existe.");
+                    $"Ocorreu um erro, id={id} não correspode ao nome ou não existe.");
             }
             
         }

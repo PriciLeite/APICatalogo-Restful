@@ -1,6 +1,7 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Model;
 using APICatalogo.Models;
+using APICatalogo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,12 +11,24 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
+       
         private readonly AppDbContext _context;
 
         public CategoriasController(AppDbContext context)
         {
             _context = context;
         }
+
+
+        // /categorias/saudacao/nome
+        [HttpGet("saudacao/{nome}")]
+        public ActionResult<string> GetSaudacao([FromServices] IMeuServico meuServico, string nome)
+        {
+            return meuServico.Saudacao(nome);
+        }
+
+
+
 
         // /Categorias/produtos
         [HttpGet("produtos")]
@@ -33,6 +46,9 @@ namespace APICatalogo.Controllers
                     "Ocorreu um erro ao tratar a sua solicitação.");
             }
         }
+
+
+
 
         // /categorias
         [HttpGet]
@@ -57,6 +73,9 @@ namespace APICatalogo.Controllers
 
         }
 
+
+
+
         // /categorias/id
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
@@ -80,6 +99,8 @@ namespace APICatalogo.Controllers
             }
 
         }
+
+
 
 
         [HttpPost]
@@ -109,6 +130,7 @@ namespace APICatalogo.Controllers
         }
 
 
+
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Categoria categoria)
         {
@@ -134,6 +156,9 @@ namespace APICatalogo.Controllers
             }
 
         }
+
+
+
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
