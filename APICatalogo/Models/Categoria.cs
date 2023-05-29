@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Model;
+using APICatalogo.Validations;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +12,7 @@ public class Categoria
 
     [Required]
     [StringLength(80)]
+    [PrimeiraLetraMaiuscula]
     public string? Nome { get; set; }
 
     [Required]
