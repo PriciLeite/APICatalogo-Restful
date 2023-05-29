@@ -2,17 +2,18 @@
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using APICatalogo.Validations;
 
 namespace APICatalogo.Model;
 
-public class Produto
+public class Produto 
 {
     [Key]
     public int ProdutoId { get; set; }
 
     [Required]
     [StringLength(80)]
+    [PrimeiraLetraMaiuscula]
     public string? Nome { get; set; }
 
     [Required]
@@ -21,6 +22,7 @@ public class Produto
 
     [Required]
     [Column(TypeName="decimal(10,2)")]
+    [Range(1,1000, ErrorMessage = "O preço válido entre {1} e {2}")]
     public decimal Preco { get; set; }
 
     [Required]
