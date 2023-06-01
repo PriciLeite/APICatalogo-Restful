@@ -1,5 +1,4 @@
 ﻿using APICatalogo.Context;
-using APICatalogo.Model;
 using APICatalogo.Models;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +12,12 @@ namespace APICatalogo.Controllers
     {
        
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public CategoriasController(AppDbContext context)
+        public CategoriasController(AppDbContext context, ILogger<CategoriasController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
 
@@ -35,7 +36,10 @@ namespace APICatalogo.Controllers
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutosAsync()
         {
             try
-            {                           //Marcando não monitoramento em cache    //aplicando filtro para obter objetos relacionados. 
+            {
+                _logger.LogInformation("================ Get categorias/produtos =============== ");
+
+                //Marcando não monitoramento em cache    //aplicando filtro para obter objetos relacionados. 
                 return await _context.Categorias.AsNoTracking().Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToListAsync();
             }
 
@@ -55,7 +59,11 @@ namespace APICatalogo.Controllers
         public async Task<ActionResult<IEnumerable<Categoria>>> GetAsync()
         {
             try
-            {                                // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
+            {   
+                _logger.LogInformation($"================ Get /categorias =============== ");
+
+
+                // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
                 var categoria = await _context.Categorias.AsNoTracking().Take(10).ToListAsync();
                 if (categoria == null)
                 {
@@ -81,10 +89,14 @@ namespace APICatalogo.Controllers
         public ActionResult<Categoria> Get(int id)
         {
             try
-            {                                     //Marcando não monitoramento em cache 
+            { 
+                _logger.LogInformation($"============= Get categorias/id = {id} ============= ");
+
+                //Marcando não monitoramento em cache 
                 var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
+                    _logger.LogInformation($"========= Get categorias/id = {id} NOT FOUND ========== ");
                     return NotFound($"Categoria id={id} não encontrada ou não existe.");
                 }
 
@@ -135,7 +147,9 @@ namespace APICatalogo.Controllers
         public ActionResult Put(int id, Categoria categoria)
         {
             try
-            {
+            {   
+                _logger.LogInformation($"================ Get categorias/id = {id} PUT =============== ");
+
                 if (id != categoria.CategoriaId)
                 {
                     return BadRequest("Id fornecido diferente para Idcategoria.");
@@ -165,6 +179,8 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                _logger.LogInformation($"================ Get categorias/id = {id} DELETE =============== "); 
+
                 var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
 
                 if (categoria is null)
