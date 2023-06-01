@@ -1,4 +1,5 @@
 using APICatalogo.Context;
+using APICatalogo.Filter;
 using APICatalogo.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,6 +18,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IMeuServico, MeuServico>();
+builder.Services.AddScoped<ApiLoggingFilter>();
 
 
 

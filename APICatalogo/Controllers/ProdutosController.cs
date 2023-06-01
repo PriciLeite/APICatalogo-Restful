@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Context;
+using APICatalogo.Filter;
 using APICatalogo.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -22,10 +23,11 @@ namespace APICatalogo.Controllers
 
         // /produtos
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Produto>>> GetAsync()
         {
             try
-            {                                   // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
+            {   // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
                 var produtos = await _context.Produtos.AsNoTracking().Take(10).ToListAsync();
 
                 if (produtos is null)
