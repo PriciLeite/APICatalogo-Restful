@@ -1,6 +1,8 @@
 using APICatalogo.Context;
 using APICatalogo.Filter;
+using APICatalogo.Logging;
 using APICatalogo.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Text.Json.Serialization;
@@ -21,11 +23,17 @@ builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.AddScoped<ApiLoggingFilter>();
 
 
-
 string? mySqlConnetion = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(mySqlConnetion,
     ServerVersion.AutoDetect(mySqlConnetion)));
+
+
+//Ativando Logger
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    LogLevel = LogLevel.Information
+}));
 
 
 var app = builder.Build();
