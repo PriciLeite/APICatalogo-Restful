@@ -1,9 +1,8 @@
-﻿using APICatalogo.Context;
-using APICatalogo.Filter;
+﻿using APICatalogo.Filter;
 using APICatalogo.Model;
+using APICatalogo.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace APICatalogo.Controllers
@@ -12,35 +11,33 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        // Injetar uma instância da classe AppDbContext:
+        // Injetar uma instância da interface IUnitOfWork - Padrão Unit Of Work:
+        private readonly IUnitOfWork _ouf; //readonly somente leitura
 
-        private readonly AppDbContext _context; //readonly somente leitura
-
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(IUnitOfWork contexto)
         {
-            _context = context;
+            _ouf = contexto;
+        }
+
+        [HttpGet("preco")]
+        public ActionResult<IEnumerable<Produto>> GetProdutoPorPrecos()
+        {
+            return _ouf.ProdutoRepository.GetProdutoPorPreco().ToList();
         }
 
         // /produtos
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetAsync()
+        public ActionResult<IEnumerable<Produto>> Get()
         {
             try
-            {   // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
-                var produtos = await _context.Produtos.AsNoTracking().Take(10).ToListAsync();
-
-                if (produtos is null)
-                {
-                    return NotFound("Produtos não encontrado ou lista vazia.");
-                }
-
+            {   
+                var produtos = _ouf.ProdutoRepository.Get().ToList(); // Detalhamento da consulta transferido pra Repository;                
                 return produtos;
             }
 
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Ocorreu um erro na obtenção dos dados...");
             }
@@ -49,13 +46,13 @@ namespace APICatalogo.Controllers
 
         // /produtos/id
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public async Task<ActionResult<Produto>> GetProdutoAsync(int id, [BindRequired] string nome)
+        public ActionResult<Produto> GetProduto(int id, [BindRequired] string nome)
         {
             try
             {
                 var nomeProduto = nome; 
-                                                    // Não monitorado pelo EF
-                var produto = await _context.Produtos.AsNoTracking().Where(c => c.Nome == nomeProduto).FirstOrDefaultAsync(p => p.ProdutoId == id);
+                var produto = _ouf.ProdutoRepository.GetById(p => p.ProdutoId == id); // Detalhamento da consulta transferido pra Repository;
+
                 if (produto == null)
                 {
                     return NotFound("Produto não encontrado.");
@@ -74,23 +71,12 @@ namespace APICatalogo.Controllers
                
 
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public ActionResult Post([FromBody]Produto produto)
         {
             try
             {
-                //// Verifica se existem informações no corpo da requisição
-                //if (HttpContext.Request.Body.CanRead)
-                //{
-                //    return BadRequest();
-                //}
-
-                if (produto is null)
-                {
-                    return BadRequest();
-                }
-
-                _context.Produtos.Add(produto);
-                _context.SaveChanges();
+                _ouf.ProdutoRepository.Add(produto); // Detalhamento da consulta transferido pra Repository;
+                _ouf.commit();
 
                 return new CreatedAtRouteResult("ObterProduto",
                     new { id = produto.ProdutoId }, produto);
@@ -98,7 +84,6 @@ namespace APICatalogo.Controllers
 
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Ocorreu um erro na obtenção dos dados...");
             }
@@ -115,14 +100,11 @@ namespace APICatalogo.Controllers
                 {
                     return BadRequest("Id não compatível com IdProduto");  //400
                 }
+ 
+                _ouf.ProdutoRepository.Update(produto); // Detalhamento da consulta transferido pra Repository;
+                _ouf.commit();
 
-                //Entry acessa as informações rastreadas pelo _context.
-                //O objeto retornado por Entry( ) é do tipo EntiteState que fornece
-                //informações sobre o estado atual da entidade e permite que você altere o estado da entidade.  
-                _context.Produtos.Entry(produto).State = EntityState.Modified;
-                _context.SaveChanges();
-
-                return Ok(produto);
+                return Ok();
             }
             catch (Exception)
             {
@@ -136,21 +118,21 @@ namespace APICatalogo.Controllers
 
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<Produto> Delete(int id)
         {
             try
             {
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+                var produto = _ouf.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
                 if (produto is null)
                 {
                     return NotFound("Produto não encontrado.");
                 }
 
-                _context.Produtos.Remove(produto);
-                _context.SaveChanges();
+                _ouf.ProdutoRepository.Delete(produto);
+                _ouf.commit();
 
-                return Ok(produto);
+                return produto;
             }
 
             catch (Exception)

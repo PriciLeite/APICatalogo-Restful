@@ -10,7 +10,7 @@ namespace APICatalogo.Repository
 
         }
 
-        public IEnumerable<Produto> GetProdutoPorPreco()
+        public IEnumerable<Produto> GetProdutoPorPreco() // Método específico de ProdutoRepository
         {
             return Get().OrderBy(p => p.Preco).ToList();
         }

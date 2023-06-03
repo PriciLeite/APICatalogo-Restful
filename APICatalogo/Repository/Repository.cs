@@ -19,12 +19,12 @@ namespace APICatalogo.Repository
         }                                              // Set<T> -> retorna uma instância DbSet<T> para o acesso a entidades de
                                                        // determinado tipo no Contexto;
 
-        public T GetById(Expression<Func<T, bool>> predicate) // obtendo por id usando o delegate Func -> comparar o id do Produto ou Categoria como critério;
+        public T? GetById(Expression<Func<T, bool>> predicate) // obtendo por id usando o delegate Func -> comparar o id do Produto ou Categoria como critério;
         {
             return _context.Set<T>().SingleOrDefault(predicate); // bool -> validará o critério se é False/True. 
         }
 
-        public void add(T entity)
+        public void Add(T entity)
         {
              _context.Set<T>().Add(entity);
         }
@@ -35,7 +35,7 @@ namespace APICatalogo.Repository
             _context.Set<T>().Update(entity); // Em seguida usa Update para atualiza-lá;
         }
 
-        public void delete(T entity)
+        public void Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
         }
