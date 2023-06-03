@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Context;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 using System.Linq.Expressions;
 
 namespace APICatalogo.Repository
@@ -31,12 +32,19 @@ namespace APICatalogo.Repository
 
         public void Update(T entity)
         {
-            _context.Entry(entity).State = EntityState.Modified; // Indicando que o State foi Modified;
+            //Isso significa que quando você chamar o método SaveChanges, o Entity Framework irá gerar
+            //uma instrução de exclusão no banco de dados para remover o objeto
+            // Esta abordagem pode ser usada no cenário conectado e desconectado sendo mais usada neste último.
+            _context.Entry(entity).State = EntityState.Modified; 
             _context.Set<T>().Update(entity); // Em seguida usa Update para atualiza-lá;
         }
 
         public void Delete(T entity)
         {
+            //Isso significa que quando você chamar o método SaveChanges, o Entity Framework irá gerar
+            //uma instrução de exclusão no banco de dados para remover o objeto
+            // Esta abordagem pode ser usada no cenário conectado e desconectado sendo mais usada neste último.
+            _context.Entry(entity).State = EntityState.Deleted; 
             _context.Set<T>().Remove(entity);
         }
     
