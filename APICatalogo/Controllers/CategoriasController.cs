@@ -1,7 +1,9 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
+using APICatalogo.Repository;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
@@ -11,12 +13,12 @@ namespace APICatalogo.Controllers
     public class CategoriasController : ControllerBase
     {
        
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _ouf;
         private readonly ILogger _logger;
 
-        public CategoriasController(AppDbContext context, ILogger<CategoriasController> logger)
+        public CategoriasController(IUnitOfWork contexto, ILogger<CategoriasController> logger)
         {
-            _context = context;
+            _ouf = contexto;
             _logger = logger;
         }
 
@@ -33,19 +35,17 @@ namespace APICatalogo.Controllers
 
         // /Categorias/produtos
         [HttpGet("produtos")]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutosAsync()
+        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
             try
             {
-                _logger.LogInformation("================ Get categorias/produtos =============== ");
+                _logger.LogInformation("================ Get categorias/produtos =============== "); // Marcação do Logger.
 
-                //Marcando não monitoramento em cache    //aplicando filtro para obter objetos relacionados. 
-                return await _context.Categorias.AsNoTracking().Include(c => c.Produtos).Where(c => c.CategoriaId <= 5).ToListAsync();
+                return _ouf.CategoriaRepository.GetCategoriasProdutos().ToList(); // Detalhamento da consulta transferido pra CategoriaRepository;                
             }
 
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Ocorreu um erro ao tratar a sua solicitação.");
             }
@@ -56,18 +56,16 @@ namespace APICatalogo.Controllers
 
         // /categorias
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetAsync()
+        public ActionResult<IEnumerable<Categoria>> Get()
         {
             try
             {   
-                _logger.LogInformation($"================ Get /categorias =============== ");
+                _logger.LogInformation($"================ Get /categorias =============== "); // Marcação do Logger.
 
-
-                // Não monitoramento  // Limitando a obtenção dos registros para não sobrecarga.
-                var categoria = await _context.Categorias.AsNoTracking().Take(10).ToListAsync();
+                var categoria = _ouf.CategoriaRepository.Get().ToList(); // Detalhamento da consulta transferido pra Repository; 
                 if (categoria == null)
                 {
-                    return NotFound("Categoria não encontrada.");
+                    return NotFound("Lista de categorias não encontrada ou vázia.");
                 }
 
                 return categoria;
@@ -81,22 +79,20 @@ namespace APICatalogo.Controllers
 
         }
 
-
-
-
         // /categorias/id
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> Get(int id)
+        public ActionResult<Categoria> Get(int id, [BindRequired] string nome)
         {
             try
             { 
-                _logger.LogInformation($"============= Get categorias/id = {id} ============= ");
+                _logger.LogInformation($"============= Get categorias/id = {id} ============= "); // Marcação do Logger.
 
-                //Marcando não monitoramento em cache 
-                var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
+                var nomeCategoria = nome;
+               
+                var categoria = _ouf.CategoriaRepository.GetById(p => p.CategoriaId == id); // Detalhamento da consulta transferido pra Repository; 
                 if (categoria == null)
                 {
-                    _logger.LogInformation($"========= Get categorias/id = {id} NOT FOUND ========== ");
+                    _logger.LogInformation($"========= Get categorias/id = {id} NOT FOUND ========== "); // Marcação do Logger.
                     return NotFound($"Categoria id={id} não encontrada ou não existe.");
                 }
 
@@ -105,7 +101,6 @@ namespace APICatalogo.Controllers
 
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     $"Ocorreu um erro id={id} não encontrado ou não existe.");
             }
@@ -120,13 +115,15 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                _logger.LogInformation($"================ POST categorias = {categoria} =============== "); // Marcação do Logger.
+
                 if (categoria is null)
                 {
-                    return BadRequest();
+                    return BadRequest("Preenchimento vázio!");
                 }
 
-                _context.Categorias.Add(categoria);
-                _context.SaveChanges();
+                _ouf.CategoriaRepository.Add(categoria); // Detalhamento da consulta transferido pra Repository;
+                _ouf.commit();
 
                 return new CreatedAtRouteResult("ObterCategoria",
                     new { id = categoria.CategoriaId }, categoria);
@@ -144,19 +141,19 @@ namespace APICatalogo.Controllers
 
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Categoria categoria)
+        public ActionResult Put(int id, Categoria categoria)  // id + objeto tipo do tipo Categoria.
         {
             try
             {   
-                _logger.LogInformation($"================ Get categorias/id = {id} PUT =============== ");
+                _logger.LogInformation($"================ Get categorias/id = {id} PUT =============== "); // Marcação do Logger.
 
                 if (id != categoria.CategoriaId)
                 {
                     return BadRequest("Id fornecido diferente para Idcategoria.");
                 }
 
-                _context.Categorias.Entry(categoria).State = EntityState.Modified;
-                _context.SaveChanges();
+                _ouf.CategoriaRepository.Update(categoria); // Detalhamento da consulta transferido pra Repository;
+                _ouf.commit();
 
                 return Ok(categoria);
 
@@ -179,17 +176,17 @@ namespace APICatalogo.Controllers
         {
             try
             {
-                _logger.LogInformation($"================ Get categorias/id = {id} DELETE =============== "); 
+                _logger.LogInformation($"================ Get categorias/id = {id} DELETE =============== "); // Marcação do Logger.
 
-                var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+                var categoria = _ouf.CategoriaRepository.GetById(p => p.CategoriaId == id); // Detalhamento da consulta transferido pra Repository;
 
                 if (categoria is null)
                 {
                     return NotFound("Id não encontrado ou não existe.");
                 }
 
-                _context.Categorias.Remove(categoria);
-                _context.SaveChanges();
+                _ouf.CategoriaRepository.Delete(categoria);
+                _ouf.commit();
 
                 return Ok(categoria);
 

@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Filter;
 using APICatalogo.Model;
+using APICatalogo.Models;
 using APICatalogo.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -75,6 +76,11 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                if (produto is null)
+                {
+                    return BadRequest("Preenchimento vázio!");
+                } 
+
                 _ouf.ProdutoRepository.Add(produto); // Detalhamento da consulta transferido pra Repository;
                 _ouf.commit();
 
@@ -104,7 +110,7 @@ namespace APICatalogo.Controllers
                 _ouf.ProdutoRepository.Update(produto); // Detalhamento da consulta transferido pra Repository;
                 _ouf.commit();
 
-                return Ok();
+                return Ok(produto);
             }
             catch (Exception)
             {
@@ -132,7 +138,7 @@ namespace APICatalogo.Controllers
                 _ouf.ProdutoRepository.Delete(produto);
                 _ouf.commit();
 
-                return produto;
+                return Ok($"Produto id = {id} deletado com sucesso!");
             }
 
             catch (Exception)
