@@ -1,10 +1,8 @@
-﻿using APICatalogo.Context;
-using APICatalogo.Models;
+﻿using APICatalogo.Models;
 using APICatalogo.Repository;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
 {
@@ -87,7 +85,7 @@ namespace APICatalogo.Controllers
             { 
                 _logger.LogInformation($"============= Get categorias/id = {id} ============= "); // Marcação do Logger.
 
-                var nomeCategoria = nome;
+                var nomeCategoria = nome;               
                
                 var categoria = _ouf.CategoriaRepository.GetById(p => p.CategoriaId == id); // Detalhamento da consulta transferido pra Repository; 
                 if (categoria == null)
@@ -111,7 +109,7 @@ namespace APICatalogo.Controllers
 
 
         [HttpPost]
-        public ActionResult Post(Categoria categoria)
+        public ActionResult Post([FromBody] Categoria categoria)
         {
             try
             {
@@ -141,7 +139,7 @@ namespace APICatalogo.Controllers
 
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Categoria categoria)  // id + objeto tipo do tipo Categoria.
+        public ActionResult Put(int id, [FromBody] Categoria categoria)  // id + objeto tipo do tipo Categoria.
         {
             try
             {   
@@ -167,8 +165,6 @@ namespace APICatalogo.Controllers
             }
 
         }
-
-
 
 
         [HttpDelete("{id:int}")]

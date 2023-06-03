@@ -14,15 +14,19 @@ namespace APICatalogo.Controllers
     {
         // Injetar uma instância da interface IUnitOfWork - Padrão Unit Of Work:
         private readonly IUnitOfWork _ouf; //readonly somente leitura
+        private readonly ILogger _logger;
 
-        public ProdutosController(IUnitOfWork contexto)
+        public ProdutosController(IUnitOfWork contexto, ILogger<ProdutosController> logger )
         {
             _ouf = contexto;
+            _logger = logger;
         }
 
         [HttpGet("preco")]
         public ActionResult<IEnumerable<Produto>> GetProdutoPorPrecos()
         {
+            _logger.LogInformation("================ Get produto/preço =============== "); // Marcação do Logger.
+
             return _ouf.ProdutoRepository.GetProdutoPorPreco().ToList();
         }
 
@@ -32,7 +36,9 @@ namespace APICatalogo.Controllers
         public ActionResult<IEnumerable<Produto>> Get()
         {
             try
-            {   
+            {
+                _logger.LogInformation("================ Get produtos =============== "); // Marcação do Logger.
+
                 var produtos = _ouf.ProdutoRepository.Get().ToList(); // Detalhamento da consulta transferido pra Repository;                
                 return produtos;
             }
@@ -51,6 +57,8 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                _logger.LogInformation($"================ Get produtos/{id}?nome={nome}&valor=true =============== "); // Marcação do Logger.
+
                 var nomeProduto = nome; 
                 var produto = _ouf.ProdutoRepository.GetById(p => p.ProdutoId == id); // Detalhamento da consulta transferido pra Repository;
 
@@ -76,6 +84,8 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                _logger.LogInformation("================ POST produto =============== "); // Marcação do Logger.
+
                 if (produto is null)
                 {
                     return BadRequest("Preenchimento vázio!");
@@ -102,6 +112,8 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                _logger.LogInformation($"================  UPDATE produto/{id}  =============== "); // Marcação do Logger.
+
                 if (id != produto.ProdutoId)
                 {
                     return BadRequest("Id não compatível com IdProduto");  //400
@@ -128,6 +140,8 @@ namespace APICatalogo.Controllers
         {
             try
             {
+                _logger.LogInformation($"================  DELETE produto/{id}  =============== "); // Marcação do Logger.
+
                 var produto = _ouf.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
                 if (produto is null)
