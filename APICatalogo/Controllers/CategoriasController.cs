@@ -1,6 +1,8 @@
-﻿using APICatalogo.Models;
+﻿using APICatalogo.DTOs;
+using APICatalogo.Models;
 using APICatalogo.Repository;
 using APICatalogo.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -13,13 +15,14 @@ namespace APICatalogo.Controllers
        
         private readonly IUnitOfWork _ouf;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
-        public CategoriasController(IUnitOfWork contexto, ILogger<CategoriasController> logger)
+        public CategoriasController(IUnitOfWork contexto, ILogger<CategoriasController> logger, IMapper mapper)
         {
             _ouf = contexto;
             _logger = logger;
+            _mapper = mapper;
         }
-
 
         // /categorias/saudacao/nome
         [HttpGet("saudacao/{nome}")]
@@ -29,17 +32,18 @@ namespace APICatalogo.Controllers
         }
 
 
-
-
         // /Categorias/produtos
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasProdutos()
         {
             try
             {
                 _logger.LogInformation("================ Get categorias/produtos =============== "); // Marcação do Logger.
+                
+                var categorias =  _ouf.CategoriaRepository.GetCategoriasProdutos().ToList(); // Detalhamento da consulta transferido pra CategoriaRepository;                
+                var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias); // Mapeia as informações de categorias para CategoriaDTO e exibe categoriasDto;
 
-                return _ouf.CategoriaRepository.GetCategoriasProdutos().ToList(); // Detalhamento da consulta transferido pra CategoriaRepository;                
+                return categoriasDto;
             }
 
             catch (Exception)
@@ -49,12 +53,9 @@ namespace APICatalogo.Controllers
             }
         }
 
-
-
-
         // /categorias
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public ActionResult<IEnumerable<CategoriaDTO>> Get()
         {
             try
             {   
@@ -65,8 +66,9 @@ namespace APICatalogo.Controllers
                 {
                     return NotFound("Lista de categorias não encontrada ou vázia.");
                 }
-
-                return categoria;
+                var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categoria);
+                
+                return categoriasDto;
             }
 
             catch (Exception)
@@ -79,7 +81,7 @@ namespace APICatalogo.Controllers
 
         // /categorias/id
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> Get(int id, [BindRequired] string nome)
+        public ActionResult<CategoriaDTO> Get(int id, [BindRequired] string nome)
         {
             try
             { 
@@ -94,7 +96,8 @@ namespace APICatalogo.Controllers
                     return NotFound($"Categoria id={id} não encontrada ou não existe.");
                 }
 
-                return categoria;
+                var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);                
+                return categoriaDto;
             }
 
             catch (Exception)
@@ -106,25 +109,22 @@ namespace APICatalogo.Controllers
         }
 
 
-
-
         [HttpPost]
-        public ActionResult Post([FromBody] Categoria categoria)
+        public ActionResult Post([FromBody] CategoriaDTO categoriaDto)
         {
             try
             {
-                _logger.LogInformation($"================ POST categorias = {categoria} =============== "); // Marcação do Logger.
+                _logger.LogInformation($"================ POST categorias = {categoriaDto} =============== "); // Marcação do Logger.
 
-                if (categoria is null)
-                {
-                    return BadRequest("Preenchimento vázio!");
-                }
+                var categoria = _mapper.Map<Categoria>(categoriaDto);
 
                 _ouf.CategoriaRepository.Add(categoria); // Detalhamento da consulta transferido pra Repository;
                 _ouf.commit();
 
+                var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+
                 return new CreatedAtRouteResult("ObterCategoria",
-                    new { id = categoria.CategoriaId }, categoria);
+                    new { id = categoria.CategoriaId }, categoriaDTO);
             }
 
             catch (Exception)
@@ -137,30 +137,32 @@ namespace APICatalogo.Controllers
         }
 
 
-
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, [FromBody] Categoria categoria)  // id + objeto tipo do tipo Categoria.
+        public ActionResult Put(int id, [FromBody] CategoriaDTO categoriaDto)  // id + objeto tipo do tipo Categoria.
         {
             try
             {   
                 _logger.LogInformation($"================ Get categorias/id = {id} PUT =============== "); // Marcação do Logger.
 
-                if (id != categoria.CategoriaId)
+                if (id != categoriaDto.CategoriaId)
                 {
+                    _logger.LogInformation($"=============== Get categorias/id = {id} ERROR ===========");
                     return BadRequest("Id fornecido diferente para Idcategoria.");
                 }
+                var categoria = _mapper.Map<Categoria>(categoriaDto);
 
                 _ouf.CategoriaRepository.Update(categoria); // Detalhamento da consulta transferido pra Repository;
                 _ouf.commit();
 
-                return Ok(categoria);
+                var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
+                
+                return Ok($"Categoria {categoriaDTO} atualizada com sucesso!");
 
             }
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"Ocorreu um erro, verifique se id={id} ou categoria={categoria} realamente existem para" +
+                    $"Ocorreu um erro, verifique se id={id} ou categoria={categoriaDto} realamente existem para" +
                     $"ser atualizados.");
             }
 
@@ -181,15 +183,14 @@ namespace APICatalogo.Controllers
                     return NotFound("Id não encontrado ou não existe.");
                 }
 
+                var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
                 _ouf.CategoriaRepository.Delete(categoria);
                 _ouf.commit();
 
-                return Ok(categoria);
-
+                return Ok($"Categoria {categoriaDto} deletado com sucesso!");
             }
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    $"Ocorreu um erro id={id} não encontrado ou não existe.");
             }
