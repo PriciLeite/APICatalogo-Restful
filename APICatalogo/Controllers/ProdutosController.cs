@@ -138,7 +138,8 @@ namespace APICatalogo.Controllers
                 var produtoDTO = _mapper.Map<ProdutoDTO>(produto); //Mapeia as informações de produto para ProdutoDTO e exibe produtoDTO;
 
 
-                return Ok($"Produto {produtoDTO} atualizado com sucesso!");              
+                return Ok(produtoDTO);
+               
             
             }
             catch (Exception)
@@ -172,7 +173,7 @@ namespace APICatalogo.Controllers
                 var produtoDTO = _mapper.Map<ProdutoDTO>(produto); //Mapeia as informações de produto para ProdutoDTO e exibe produtoDTO;
 
 
-                return Ok($"Produto id = {produtoDTO} deletado com sucesso!");
+                return Ok($"Produto id = {id} deletado com sucesso!");
             }
 
             catch (Exception)

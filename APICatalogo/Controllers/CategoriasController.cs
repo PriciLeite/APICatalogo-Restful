@@ -108,7 +108,7 @@ namespace APICatalogo.Controllers
 
         }
 
-
+        // /categorias
         [HttpPost]
         public ActionResult Post([FromBody] CategoriaDTO categoriaDto)
         {
@@ -149,14 +149,16 @@ namespace APICatalogo.Controllers
                     _logger.LogInformation($"=============== Get categorias/id = {id} ERROR ===========");
                     return BadRequest("Id fornecido diferente para Idcategoria.");
                 }
+
                 var categoria = _mapper.Map<Categoria>(categoriaDto);
 
                 _ouf.CategoriaRepository.Update(categoria); // Detalhamento da consulta transferido pra Repository;
                 _ouf.commit();
 
                 var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
-                
-                return Ok($"Categoria {categoriaDTO} atualizada com sucesso!");
+
+                return Ok($"Categoria atualizado com sucesso!");
+
 
             }
             catch (Exception)
@@ -187,7 +189,7 @@ namespace APICatalogo.Controllers
                 _ouf.CategoriaRepository.Delete(categoria);
                 _ouf.commit();
 
-                return Ok($"Categoria {categoriaDto} deletado com sucesso!");
+                return Ok($"Categoria deletado com sucesso!");
             }
             catch (Exception)
             {
