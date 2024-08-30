@@ -125,7 +125,7 @@ Content-Type: application/json
 **GET** `/api/produtos/{id}`
 
 ```http
-GET /api/usuarios HTTP/1.1
+GET /api/produtos/{id} HTTP/1.1
 Host: api.exemplo.com
 Authorization: Bearer {seu-token-aqui}
 ```
