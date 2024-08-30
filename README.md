@@ -99,8 +99,8 @@ Content-Type: application/json
 
 #### **Descrição dos Endpoints**
 
-1. **GET** `/api/catalogos`:
-   - Retorna a lista de todos os catálogos disponíveis.
+1. **GET** `/api/produtos`:
+   - Retorna a lista de todos os produtos disponíveis.
    - **Resposta de Sucesso:**
      ```json
 
@@ -108,7 +108,7 @@ Content-Type: application/json
 
 #### **Exemplo de Requisição**
 
-**GET** `/api/usuarios`
+**GET** `/api/produtos/{id}`
 
 ```http
 GET /api/usuarios HTTP/1.1
@@ -121,12 +121,13 @@ Authorization: Bearer {seu-token-aqui}
 {
   "data": [
     {
-      "id": 1,
-      "nome": "João Silva",
-      "email": "joao.silva@exemplo.com"
-    }
-  ]
-}
+      "id": 101,
+      "nome": "Teclado Mecânico RGB",
+      "descricao": "Teclado mecânico com iluminação RGB.",
+      "preco": 299.99,
+      "estoque": 50,
+      "categoria": "Periféricos"
+    },
 ```
 
 **Erros Comuns:**
