@@ -95,7 +95,22 @@ Content-Type: application/json
 1. **GET** `/api/catalogos`:
    - Retorna a lista de todos os catálogos disponíveis.
    - **Resposta de Sucesso:**
-     ```json
+    ```json
+   {
+     "id": 10,
+     "nome": "Periféricos",
+     "descricao": "Dispositivos que complementam o funcionamento de um computador.",
+     "produtos": [
+       {
+         "id": 101,
+         "nome": "Teclado Mecânico RGB",
+         "descricao": "Teclado mecânico com iluminação RGB e switches Blue.",
+         "preco": 299.99,
+         "estoque": 50,
+         "dataCriacao": "2024-08-29T12:34:56Z",
+         "dataAtualizacao": "2024-08-29T12:34:56Z"
+    },
+    
 
 #### **Descrição dos Endpoints**
 
@@ -103,8 +118,7 @@ Content-Type: application/json
    - Retorna a lista de todos os produtos disponíveis.
    - **Resposta de Sucesso:**
      ```json
-
-
+  
 
 #### **Exemplo de Requisição**
 
