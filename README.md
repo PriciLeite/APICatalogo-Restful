@@ -1,6 +1,4 @@
-Claro! Abaixo está um exemplo de documentação para uma API REST criada com .NET e C# no README:
 
----
 
 ## 🌐 **API REST - CATÁLOGO DE PRODUTOS PARA E-COMMERCE**
 
