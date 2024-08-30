@@ -67,15 +67,44 @@ Content-Type: application/json
 
 ### 📚 **Documentação da API**
 
-#### **Endpoints**
+#### **Endpoints para Catálogo**
+--------------------------------------------------------------------------------------------------
+| Método | Endpoint                 | Descrição                                   | Autenticação  |
+|--------|--------------------------|---------------------------------------------|---------------|
+| GET    | `/api/catalogos`         | Retorna a lista de todos os produtos        |  Não          |
+| GET    | `/api/catalogos/{id}`    | Retorna um produto específico pelo ID       |  Não          |
+| POST   | `/api/catalogos`         | Cria um novo produto                        |  🔒 Sim       |
+| PUT    | `/api/catalogos/{id}`    | Atualiza os dados de um produto específico  |  🔒 Sim       |
+| DELETE | `/api/catalogos/{id}`    | Remove um produto específico                |  🔒 Sim       |
+----------------------------------------------------------------------------------------------------
 
-| Método | Endpoint                | Descrição                       | Autenticação |
-|--------|-------------------------|---------------------------------|--------------|
-| GET    | `/api/usuarios`          | Retorna todos os usuários       | 🔒 Sim       |
-| POST   | `/api/usuarios`          | Cria um novo usuário            | 🔒 Sim       |
-| GET    | `/api/usuarios/{id}`     | Retorna um usuário específico   | 🔒 Sim       |
-| PUT    | `/api/usuarios/{id}`     | Atualiza um usuário específico  | 🔒 Sim       |
-| DELETE | `/api/usuarios/{id}`     | Remove um usuário específico    | 🔒 Sim       |
+#### **Endpoints para Produtos**
+--------------------------------------------------------------------------------------------------
+| Método | Endpoint                 | Descrição                                   | Autenticação  |
+|--------|--------------------------|---------------------------------------------|---------------|
+| GET    | `/api/produtos`          | Retorna a lista de todos os produtos        |  Não          |
+| GET    | `/api/produtos/{id}`     | Retorna um produto específico pelo ID       |  Não          |
+| POST   | `/api/produtos`          | Cria um novo produto                        |  🔒 Sim       |
+| PUT    | `/api/produtos/{id}`     | Atualiza os dados de um produto específico  |  🔒 Sim       |
+| DELETE | `/api/produtos/{id}`     | Remove um produto específico                |  🔒 Sim       |
+----------------------------------------------------------------------------------------------------
+
+
+#### **Descrição dos Endpoints**
+
+1. **GET** `/api/catalogos`:
+   - Retorna a lista de todos os catálogos disponíveis.
+   - **Resposta de Sucesso:**
+     ```json
+
+#### **Descrição dos Endpoints**
+
+1. **GET** `/api/catalogos`:
+   - Retorna a lista de todos os catálogos disponíveis.
+   - **Resposta de Sucesso:**
+     ```json
+
+
 
 #### **Exemplo de Requisição**
 
@@ -117,13 +146,13 @@ Token JWT -> [GET /api/usuarios] -> Dados dos Usuários
 - **Tratamento de erros**: Sempre verifique os códigos de status HTTP e trate-os de forma adequada no seu cliente.
 
 ### 🧩 **Recursos Adicionais**
-- [Documentação completa no Swagger](https://api.exemplo.com/swagger)
-- [Exemplo de cliente C#](https://github.com/usuario/api-cliente)
+- [Documentação completa no Swagger](https://learn.microsoft.com/pt-br/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-6.0)
+- [Exemplo de cliente C#]()
 
 ### 🎨 **Layout Visual**
 Abaixo estão capturas de tela dos endpoints mais importantes acessados através do Swagger:
 
-![Swagger UI](https://link-para-imagem.com/swagger.png)
+![Swagger UI]()
 
 ### 🤝 **Contribuição**
 Contribuições são bem-vindas! Para começar:
@@ -134,8 +163,5 @@ Contribuições são bem-vindas! Para começar:
 - Abra um Pull Request
 
 ### 🛡️ **Licença**
-Este projeto está licenciado sob a [MIT License](https://opensource.org/licenses/MIT) - veja o arquivo `LICENSE` para mais detalhes.
+Este projeto foi desenvolvido por mim, Priscila Leite, para compor meu acervo de projetos com C# e .Net
 
----
-
-Essa estrutura ajudará a manter a documentação clara, funcional e atraente para desenvolvedores que usarão ou contribuirão com a API.
