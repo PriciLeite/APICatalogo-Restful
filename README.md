@@ -3,7 +3,8 @@
 ## 🌐 **API REST - CATÁLOGO DE PRODUTOS PARA E-COMMERCE**
 
 ### 🚀 **Introdução**
-Esta API foi desenvolvida com o objetivo de fornecer [descrição da funcionalidade]. Construída usando .NET e C#, ela permite [explicação breve do que a API faz].
+Esta API foi desenvolvida com o objetivo de fornecer um catálogo de produtos, separados em categórias. Construída usando .NET e C#, ela permite extrair os produtos da base de dados, para que posssa integras
+as diversas aplicações existentes no negócio.
 
 ### 🛠️ **Tecnologias Utilizadas**
 - **Linguagem:** C#
